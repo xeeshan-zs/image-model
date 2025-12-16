@@ -4,17 +4,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewContainer = document.getElementById('preview-container');
     const imagePreview = document.getElementById('image-preview');
     const clearBtn = document.getElementById('clear-btn');
-    const loader = document.getElementById('loader');
     const statusText = document.getElementById('status-text');
 
     // Result elements
     const verdictText = document.getElementById('verdict-text');
     const verdictIcon = document.getElementById('verdict-icon');
     const confidenceBadge = document.getElementById('confidence-badge');
-    const spectrumImg = document.getElementById('spectrum-img');
-    const analysisText = document.getElementById('analysis-text');
 
-    // Drag & Drop Handlers
+    // Drag & Drop
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
     });
@@ -25,35 +22,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, highlight, false);
+        dropZone.addEventListener(eventName, () => {
+            dropZone.style.borderColor = '#0066cc';
+            dropZone.style.backgroundColor = '#f0f8ff';
+        }, false);
     });
 
     ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, unhighlight, false);
+        dropZone.addEventListener(eventName, () => {
+            dropZone.style.borderColor = '#999';
+            dropZone.style.backgroundColor = 'white';
+        }, false);
     });
 
-    function highlight(e) {
-        dropZone.classList.add('dragover');
-    }
-
-    function unhighlight(e) {
-        dropZone.classList.remove('dragover');
-    }
-
-    dropZone.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
         handleFiles(files);
-    }
+    }, false);
 
-    // File Input Handler
+    // File Input
     fileInput.addEventListener('change', function () {
         handleFiles(this.files);
     });
 
-    // Clear Button Handler
+    // Clear Button
     clearBtn.addEventListener('click', () => {
         resetUI();
     });
@@ -81,31 +73,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetUI() {
-        dropZone.style.display = 'flex';
+        dropZone.style.display = 'block';
         previewContainer.style.display = 'none';
         imagePreview.src = '';
         fileInput.value = '';
 
-        statusText.textContent = "Ready to analyze";
-        statusText.style.color = "#a0a0a0";
-        loader.style.display = 'none';
-
+        statusText.textContent = "Ready";
         verdictText.textContent = "Waiting for image...";
-        verdictText.style.color = "#a0a0a0";
         verdictIcon.textContent = "❓";
         confidenceBadge.textContent = "--%";
-
-        spectrumImg.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmIyYjJiIi8+PC9zdmc+";
-        analysisText.textContent = "Upload an image to see spectral analysis.";
     }
 
     async function uploadAndAnalyze(file) {
-        // Update UI to loading state
-        statusText.textContent = "Analyzing image...";
-        statusText.style.color = "#3b82f6";
-        loader.style.display = 'inline-block';
-        verdictText.textContent = "Analyzing...";
-        verdictText.style.color = "#eab308"; // yellow
+        statusText.textContent = "Analyzing...";
+        verdictText.textContent = "Please wait...";
         verdictIcon.textContent = "⏳";
 
         const formData = new FormData();
@@ -120,34 +101,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.success) {
-                // Formatting Verdict
                 const isAI = data.is_ai;
                 const confidence = data.confidence.toFixed(1);
 
                 if (isAI) {
                     verdictText.textContent = "AI Generated";
-                    verdictText.style.color = "#ef4444"; // red
+                    verdictText.style.color = "#cc0000";
                     verdictIcon.textContent = "🤖";
                 } else {
                     verdictText.textContent = "Real Image";
-                    verdictText.style.color = "#22c55e"; // green
+                    verdictText.style.color = "#009900";
                     verdictIcon.textContent = "📸";
                 }
 
-                confidenceBadge.textContent = `${confidence}% Confidence`;
-
-                // Update Spectrum
-                if (data.spectrum_image) {
-                    spectrumImg.src = data.spectrum_image;
-                }
-
-                // Update Analysis Text
-                if (data.analysis) {
-                    analysisText.textContent = data.analysis;
-                }
-
-                statusText.textContent = "Analysis Complete";
-                statusText.style.color = "#22c55e";
+                confidenceBadge.textContent = confidence + "% confidence";
+                statusText.textContent = "Done!";
 
             } else {
                 throw new Error(data.error || "Analysis failed");
@@ -155,12 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error:', error);
-            statusText.textContent = "Error: " + error.message;
-            statusText.style.color = "#ef4444";
+            statusText.textContent = "Error occurred";
             verdictText.textContent = "Error";
             verdictIcon.textContent = "⚠️";
-        } finally {
-            loader.style.display = 'none';
         }
     }
 });

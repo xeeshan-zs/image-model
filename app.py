@@ -1,12 +1,6 @@
 import os
-import io
-import base64
-import numpy as np
-import cv2
 from flask import Flask, render_template, request, jsonify
-from PIL import Image
 from detection_engine import AIImageDetector
-from spectral_analysis import compute_spectral_fingerprint_web, analyze_spectrum_patterns
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -59,19 +53,6 @@ def analyze():
             detection_result = "Model unavailable"
             raw_result = {'label': 'unknown', 'confidence': 0}
 
-        # 2. Spectral Analysis
-        spectrum_fig = compute_spectral_fingerprint_web(file_path)
-        
-        # Convert figure to base64
-        buf = io.BytesIO()
-        spectrum_fig.savefig(buf, format='png', bbox_inches='tight', facecolor='#2b2b2b')
-        buf.seek(0)
-        spectrum_b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-        plt.close(spectrum_fig)
-        
-        # 3. Pattern Analysis
-        analysis_text = analyze_spectrum_patterns(file_path)
-        
         # Clean up
         os.remove(file_path)
         
@@ -79,9 +60,7 @@ def analyze():
             'success': True,
             'detection': detection_result,
             'is_ai': 'artificial' in raw_result['label'].lower(),
-            'confidence': raw_result['confidence'],
-            'spectrum_image': f"data:image/png;base64,{spectrum_b64}",
-            'analysis': analysis_text
+            'confidence': raw_result['confidence']
         })
         
     except Exception as e:
