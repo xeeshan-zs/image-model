@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Detector | Advanced Spectral Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <main class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-fingerprint"></i>
+                <h1>AI Detector</h1>
+            </div>
+            <p class="subtitle">Advanced Deep Learning & Spectral Fingerprinting</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="app-grid">
+            
+            <!-- Left Panel: Upload -->
+            <section class="panel upload-panel">
+                <div class="upload-zone" id="drop-zone">
+                    <div class="upload-content">
+                        <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        <h3>Drag & Drop Image</h3>
+                        <p>or click to browse</p>
+                        <input type="file" id="file-input" accept="image/*" hidden>
+                        <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                            Choose File
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="preview-container" id="preview-container" style="display: none;">
+                    <img id="image-preview" src="" alt="Preview">
+                    <button class="btn-clear" id="clear-btn" title="Remove image">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div class="status-bar">
+                    <span id="status-text">Ready to analyze</span>
+                    <div class="loader" id="loader"></div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Results -->
+            <section class="panel results-panel" id="results-panel">
+                
+                <!-- Primary Detection -->
+                <div class="result-card" id="detection-card">
+                    <div class="card-header">
+                        <h2>Primary Detection</h2>
+                        <span class="badge" id="confidence-badge">--%</span>
+                    </div>
+                    <div class="detection-verdict" id="verdict-container">
+                        <span id="verdict-icon">❓</span>
+                        <h1 id="verdict-text">Waiting for image...</h1>
+                    </div>
+                </div>
+
+                <!-- Spectral Analysis -->
+                <div class="result-card" id="spectral-card">
+                    <div class="card-header">
+                        <h2>Spectral Fingerprint</h2>
+                        <i class="fa-solid fa-circle-info info-icon" title="Frequency domain analysis identifying generative artifacts"></i>
+                    </div>
+                    
+                    <div class="spectral-content">
+                        <div class="spectrum-visual">
+                            <img id="spectrum-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMmIyYjJiIi8+PC9zdmc+" alt="Spectrum Analysis">
+                        </div>
+                        <div class="analysis-text" id="analysis-text">
+                            Upload an image to see spectral analysis.
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
